@@ -1,0 +1,145 @@
+<html>
+  <head>
+    <title> 
+    </title>
+    <script language="javascript">
+      //var deck = null
+      var currentDeal = null
+      //var suites = ["CLUBS","DIAMONDS","HEARTS","SPADES"]
+      var suites = ["clubs","diamonds","hearts","spades"]
+      //var ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']
+      var ranks = ['a','2','3','4','5','6','7','8','9','10','j','q','k']
+
+      function initializeDeck() {
+        deck = new Array(52)
+        i = 0
+        for(s = 0; s < suites.length; s++) {
+          for(r = 0; r < ranks.length; r++) {
+            card = new Object()
+            card.suite = s
+            card.rank = r
+            deck[i] = card
+            i++
+          }
+        }
+        return deck
+      }
+
+      function play() {
+        game = new Object()
+        players = new Array(2)
+        players[0] = new Object()
+        players[1] = new Object()
+        game.players = players
+        decks = new Array(3)
+        decks[0] = initializeDeck()
+        decks[1] = initializeDeck()
+        decks[2] = initializeDeck()
+        game.decks = decks
+        game.start() = function() {
+          shuffle(decks)
+        }
+      }
+
+      function shuffle(decks) {
+        all_cards = new Array(decks.length * 52)
+        for(i = 0; i < decks.length; i++) {
+          for(j = 0; j < deck.length; j++) {
+            all_cards[count] = decks[i][j]
+          }
+        }
+      }
+
+      function deal() {
+        if(null == deck) {
+          initializeDeck()
+        }
+        currentDeal = pick_cards(13)
+        display_card_images(currentDeal)
+      }
+
+      function pick_cards(count) {
+        countArray = new Array(52)
+
+        for(k = 0; k < 52; k++) {
+          countArray[k] = k
+        }
+
+        cards_dealt = new Array(count)
+        for(d = 0; d < count; d++) {
+          currentNumber = Math.floor(Math.random()*(countArray.length))
+          cards_dealt[d] = deck[countArray[currentNumber]]
+          countArray.splice(currentNumber,1)
+        }
+
+        return cards_dealt
+      }
+
+      function display_cards_in_div(cards) {
+        displayDiv = document.getElementById("cards")
+        cards_dealt="<table border='1'>"
+          for(c = 0; c < cards.length; c++) {
+            currentCard = cards[c]
+            cards_dealt = cards_dealt + "<tr><td>" + (c+1) + "</td><td>" + suites[currentCard.suite] + "</td><td>" + ranks[currentCard.rank] + "</td></tr>"
+          }
+          cards_dealt += "</table>"
+        displayDiv.innerHTML = cards_dealt
+      }
+
+      function display_card_images(cards) {
+        displayDiv = document.getElementById("cards")
+        cards_dealt="<table>"
+        for(c = 0; c < cards.length; c++) {
+          currentCard = cards[c]
+          cards_dealt = cards_dealt + "<td><img src='card-images/" + suites[currentCard.suite] + "-" + ranks[currentCard.rank] + "-75.png'></td>" 
+        }
+        displayDiv.innerHTML = cards_dealt
+      }
+
+      function display_cards(cards) {
+        cards_dealt = ""
+        document.myform.cards_dealt.value = cards_dealt
+        for(c = 0; c < cards.length; c++) {
+          currentCard = cards[c]
+          cards_dealt = cards_dealt + (c+1) + " : " + currentCard.suite + " - " + currentCard.rank + "\n"
+          document.myform.cards_dealt.value = cards_dealt
+        }
+      }
+
+      function compareCards(card1, card2) {
+        //how to sort //sort by suite //then sort by rank
+        if(card1.suite == card2.suite) {
+          return card1.rank - card2.rank
+          } else {
+          return card1.suite - card2.suite
+        }
+      }
+
+      function sort() {
+        if(null == currentDeal) {
+          choice = confirm("Cards not dealt yet! Shall I deal first, before sorting?")
+          if(choice) {
+            deal()
+            } else {
+            return false
+          }
+        }
+
+        if(null == currentDeal) {
+          return false
+        }
+
+        currentDeal.sort(compareCards)
+        display_card_images(currentDeal)
+      }
+    </script>
+  </head>
+  <body>
+    <form name="myform">
+      <input type="button" name="dealer" value="deal!" onclick="deal()"/><br/>
+      <input type="button" name="sorter" value="sort!" onclick="sort()"/><br/>
+      <div id="cards"></div>
+    </form>
+  </body>
+</html>
+
