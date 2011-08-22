@@ -25,37 +25,68 @@
         return deck
       }
 
-      function play() {
-        game = new Object()
+      function game() {
         players = new Array(2)
         players[0] = new Object()
+        players[0].id = 0
         players[1] = new Object()
-        game.players = players
+        players[1].id = 1
+        this.players = players
+
         decks = new Array(3)
         decks[0] = initializeDeck()
         decks[1] = initializeDeck()
         decks[2] = initializeDeck()
-        game.decks = decks
-        game.start() = function() {
-          shuffle(decks)
+        this.decks = decks
+
+        this.start = function() {
+          shuffled_deck = shuffle(decks)
+          deal(players, shuffled_deck)
+          display_cards_for_each_player(players)
+        }
+      }
+
+      function display_cards_for_each_player(players) {
+        for(p = 0; p < players.length; p++) {
+          display_card_images(players[p].currentHand, "cards-" + p)
         }
       }
 
       function shuffle(decks) {
-        all_cards = new Array(decks.length * 52)
-        for(i = 0; i < decks.length; i++) {
-          for(j = 0; j < deck.length; j++) {
-            all_cards[count] = decks[i][j]
+        count = 0
+        total_cards = decks.length * 52
+        all_cards = new Array(total_cards)
+        shuffled_deck = new Array(total_cards)
+        for(d = 0; d < decks.length; d++) {
+          for(c = 0; c < 52; c++) {
+            all_cards[count] = decks[d][c]
+            count++
           }
         }
+        count = 0
+        for(i = 0; i < total_cards; i++) {
+          currentNumber = Math.floor(Math.random()*(total_cards - i))
+          shuffled_deck[count] = all_cards[currentNumber]
+          all_cards.splice(currentNumber,1)
+          count++
+        }
+        return shuffled_deck
       }
 
-      function deal() {
-        if(null == deck) {
-          initializeDeck()
+      function deal(players, shuffled_deck) {
+        for(i = 0; i < players.length; i++) {
+          players[i].currentHand = new Array(13)
         }
-        currentDeal = pick_cards(13)
-        display_card_images(currentDeal)
+
+        count = 0
+        for(c = 0; c < 13; c++) {
+          for(i = 0; i < players.length; i++) {
+            players[i].currentHand[c] = shuffled_deck.pop()
+            count++
+          }
+        }
+        
+        //return shuffled_deck
       }
 
       function pick_cards(count) {
@@ -86,12 +117,27 @@
         displayDiv.innerHTML = cards_dealt
       }
 
-      function display_card_images(cards) {
-        displayDiv = document.getElementById("cards")
+      function display_card_images(cards, divName) {
+        count = 0
+        rowFlag = "open"
+        displayDiv = document.getElementById(divName)
         cards_dealt="<table>"
         for(c = 0; c < cards.length; c++) {
           currentCard = cards[c]
+          if((count % 13) == 0) {
+            cards_dealt = cards_dealt + "<tr>"
+            rowFlag = "open"
+          }
           cards_dealt = cards_dealt + "<td><img src='card-images/" + suites[currentCard.suite] + "-" + ranks[currentCard.rank] + "-75.png'></td>" 
+          if((count % 13) == 12) {
+            cards_dealt += "</tr>"
+            rowFlag = "closed"
+          }
+          count++
+        }
+        if(rowFlag == "open") {
+          cards_dealt += "</tr>"
+          rowFlag = "closed"
         }
         displayDiv.innerHTML = cards_dealt
       }
@@ -132,13 +178,27 @@
         currentDeal.sort(compareCards)
         display_card_images(currentDeal)
       }
+
+      function play() {
+        numberOfPlayers = Number(document.myform.number_of_players.value)
+        numberOfDecks = Number(document.myform.number_of_decks.value)
+        game = new game(numberOfPlayers, numberOfDecks)
+        game.start()
+      }
     </script>
   </head>
   <body>
     <form name="myform">
-      <input type="button" name="dealer" value="deal!" onclick="deal()"/><br/>
+      Number Of Players: <input type="text" name="number_of_players" value=""/></br>
+      Number Of Decks: <input type="text" name="number_of_decks" value=""/></br>
+      <input type="button" name="dealer" value="play!" onclick="play()"/><br/>
       <input type="button" name="sorter" value="sort!" onclick="sort()"/><br/>
       <div id="cards"></div>
+      <div id="cards-0"></div>
+      <div id="cards-1"></div>
+      <div id="cards-2"></div>
+      <div id="cards-3"></div>
+      <div id="cards-4"></div>
     </form>
   </body>
 </html>
