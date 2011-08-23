@@ -40,11 +40,11 @@
         this.decks = decks
 
         this.start = function() {
-          alert("starting new game")
+          //alert("starting new game")
           var shuffled_deck = shuffle(decks)
-          alert("cards shuffled")
+          //alert("cards shuffled")
           deal(players, shuffled_deck)
-          alert("cards dealt")
+          //alert("cards dealt")
           display_cards_for_each_player(players)
         }
       }
@@ -135,12 +135,31 @@
         display_cards_for_each_player(players)
       }
 
+      function createDivs(parentDiv, numberOfPlayers) {
+        if(null == parentDiv || undefined == parentDiv) {
+          parentDiv = "cards"
+        }
+        var displayDiv = document.getElementById(parentDiv)
+        if(null == displayDiv || undefined == displayDiv) {
+          return false
+        }
+        for(var i = 0; i < numberOfPlayers; i++) {
+          displayDiv.innerHTML += "<div id='cards-"+i+"'></div>"
+        }
+
+        return true
+      }
+
       function play() {
         var numberOfPlayers = Number(document.myform.number_of_players.value)
         var numberOfDecks = Number(document.myform.number_of_decks.value)
-        myGame = new game(numberOfPlayers, numberOfDecks)
-        alert("new game created")
-        myGame.start()
+        isHTMLStructureValid = createDivs("cards", numberOfPlayers)
+        if(true == isHTMLStructureValid) {
+          myGame = new game(numberOfPlayers, numberOfDecks)
+          myGame.start()
+          } else {
+          alert("Invalid HTML Structure. Please contact support.")
+        }
       }
     </script>
   </head>
@@ -151,11 +170,6 @@
       <input type="button" name="dealer" value="play!" onclick="play()"/><br/>
       <input type="button" name="sorter" value="sort!" onclick="sort()"/><br/>
       <div id="cards"></div>
-      <div id="cards-0"></div>
-      <div id="cards-1"></div>
-      <div id="cards-2"></div>
-      <div id="cards-3"></div>
-      <div id="cards-4"></div>
     </form>
   </body>
 </html>
