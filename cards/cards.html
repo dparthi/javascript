@@ -3,19 +3,18 @@
     <title> 
     </title>
     <script language="javascript">
-      //var deck = null
-      var currentDeal = null
+      var myGame = null
       //var suites = ["CLUBS","DIAMONDS","HEARTS","SPADES"]
       var suites = ["clubs","diamonds","hearts","spades"]
       //var ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']
       var ranks = ['a','2','3','4','5','6','7','8','9','10','j','q','k']
 
       function initializeDeck() {
-        deck = new Array(52)
-        i = 0
-        for(s = 0; s < suites.length; s++) {
-          for(r = 0; r < ranks.length; r++) {
-            card = new Object()
+        var deck = new Array(52)
+        var i = 0
+        for(var s = 0; s < suites.length; s++) {
+          for(var r = 0; r < ranks.length; r++) {
+            var card = new Object()
             card.suite = s
             card.rank = r
             deck[i] = card
@@ -25,47 +24,51 @@
         return deck
       }
 
-      function game() {
-        players = new Array(2)
-        players[0] = new Object()
-        players[0].id = 0
-        players[1] = new Object()
-        players[1].id = 1
+      function game(numberOfPlayers, numberOfDecks) {
+        var players = new Array(numberOfPlayers)
+        var i = 0
+        for(; i < numberOfPlayers; i++) {
+          players[i] = new Object()
+          players[i].id = i
+        }
         this.players = players
 
-        decks = new Array(3)
-        decks[0] = initializeDeck()
-        decks[1] = initializeDeck()
-        decks[2] = initializeDeck()
+        var decks = new Array(numberOfDecks)
+        for(i = 0; i < numberOfDecks; i++) {
+          decks[i] = initializeDeck()
+        }
         this.decks = decks
 
         this.start = function() {
-          shuffled_deck = shuffle(decks)
+          alert("starting new game")
+          var shuffled_deck = shuffle(decks)
+          alert("cards shuffled")
           deal(players, shuffled_deck)
+          alert("cards dealt")
           display_cards_for_each_player(players)
         }
       }
 
       function display_cards_for_each_player(players) {
         for(p = 0; p < players.length; p++) {
-          display_card_images(players[p].currentHand, "cards-" + p)
+          display_card_images(players[p].currentHand, "cards-" + players[p].id)
         }
       }
 
       function shuffle(decks) {
-        count = 0
-        total_cards = decks.length * 52
-        all_cards = new Array(total_cards)
-        shuffled_deck = new Array(total_cards)
-        for(d = 0; d < decks.length; d++) {
-          for(c = 0; c < 52; c++) {
+        var count = 0
+        var total_cards = decks.length * 52
+        var all_cards = new Array(total_cards)
+        var shuffled_deck = new Array(total_cards)
+        for(var d = 0; d < decks.length; d++) {
+          for(var c = 0; c < 52; c++) {
             all_cards[count] = decks[d][c]
             count++
           }
         }
         count = 0
-        for(i = 0; i < total_cards; i++) {
-          currentNumber = Math.floor(Math.random()*(total_cards - i))
+        for(var i = 0; i < total_cards; i++) {
+          var currentNumber = Math.floor(Math.random()*(total_cards - i))
           shuffled_deck[count] = all_cards[currentNumber]
           all_cards.splice(currentNumber,1)
           count++
@@ -74,56 +77,29 @@
       }
 
       function deal(players, shuffled_deck) {
-        for(i = 0; i < players.length; i++) {
+        for(var i = 0; i < players.length; i++) {
           players[i].currentHand = new Array(13)
         }
 
-        count = 0
-        for(c = 0; c < 13; c++) {
-          for(i = 0; i < players.length; i++) {
+        var count = 0
+        for(var c = 0; c < 13; c++) {
+          for(var i = 0; i < players.length; i++) {
             players[i].currentHand[c] = shuffled_deck.pop()
             count++
           }
         }
-        
-        //return shuffled_deck
-      }
-
-      function pick_cards(count) {
-        countArray = new Array(52)
-
-        for(k = 0; k < 52; k++) {
-          countArray[k] = k
-        }
-
-        cards_dealt = new Array(count)
-        for(d = 0; d < count; d++) {
-          currentNumber = Math.floor(Math.random()*(countArray.length))
-          cards_dealt[d] = deck[countArray[currentNumber]]
-          countArray.splice(currentNumber,1)
-        }
-
-        return cards_dealt
-      }
-
-      function display_cards_in_div(cards) {
-        displayDiv = document.getElementById("cards")
-        cards_dealt="<table border='1'>"
-          for(c = 0; c < cards.length; c++) {
-            currentCard = cards[c]
-            cards_dealt = cards_dealt + "<tr><td>" + (c+1) + "</td><td>" + suites[currentCard.suite] + "</td><td>" + ranks[currentCard.rank] + "</td></tr>"
-          }
-          cards_dealt += "</table>"
-        displayDiv.innerHTML = cards_dealt
       }
 
       function display_card_images(cards, divName) {
-        count = 0
-        rowFlag = "open"
-        displayDiv = document.getElementById(divName)
-        cards_dealt="<table>"
-        for(c = 0; c < cards.length; c++) {
-          currentCard = cards[c]
+        if(divName == null || divName == "") {
+          divName = "cards"
+        }
+        var count = 0
+        var rowFlag = "open"
+        var displayDiv = document.getElementById(divName)
+        var cards_dealt="<table>"
+        for(var c = 0; c < cards.length; c++) {
+          var currentCard = cards[c]
           if((count % 13) == 0) {
             cards_dealt = cards_dealt + "<tr>"
             rowFlag = "open"
@@ -142,16 +118,6 @@
         displayDiv.innerHTML = cards_dealt
       }
 
-      function display_cards(cards) {
-        cards_dealt = ""
-        document.myform.cards_dealt.value = cards_dealt
-        for(c = 0; c < cards.length; c++) {
-          currentCard = cards[c]
-          cards_dealt = cards_dealt + (c+1) + " : " + currentCard.suite + " - " + currentCard.rank + "\n"
-          document.myform.cards_dealt.value = cards_dealt
-        }
-      }
-
       function compareCards(card1, card2) {
         //how to sort //sort by suite //then sort by rank
         if(card1.suite == card2.suite) {
@@ -162,28 +128,19 @@
       }
 
       function sort() {
-        if(null == currentDeal) {
-          choice = confirm("Cards not dealt yet! Shall I deal first, before sorting?")
-          if(choice) {
-            deal()
-            } else {
-            return false
-          }
+        players = myGame.players
+        for(var i = 0; i < players.length; i++) {
+          players[i].currentHand.sort(compareCards)
         }
-
-        if(null == currentDeal) {
-          return false
-        }
-
-        currentDeal.sort(compareCards)
-        display_card_images(currentDeal)
+        display_cards_for_each_player(players)
       }
 
       function play() {
-        numberOfPlayers = Number(document.myform.number_of_players.value)
-        numberOfDecks = Number(document.myform.number_of_decks.value)
-        game = new game(numberOfPlayers, numberOfDecks)
-        game.start()
+        var numberOfPlayers = Number(document.myform.number_of_players.value)
+        var numberOfDecks = Number(document.myform.number_of_decks.value)
+        myGame = new game(numberOfPlayers, numberOfDecks)
+        alert("new game created")
+        myGame.start()
       }
     </script>
   </head>
